@@ -5,7 +5,7 @@ jobs:
   test:
     docker:
       - image: circleci/golang:1.14
-    working_directory: /home/circleci/go/src/github.com/shirou/gopsutil
+    working_directory: /home/circleci/go/src/github.com/f00stx/gopsutil
     environment:
       GOPATH: /home/circleci/go
     steps:
@@ -37,18 +37,18 @@ jobs:
       - run:
           command: |
             make init_tools
-            mkdir -p ${GOPATH}/src/github.com/shirou/
-            mv /Users/distiller/project /Users/distiller/go/src/github.com/shirou/gopsutil
+            mkdir -p ${GOPATH}/src/github.com/f00stx/
+            mv /Users/distiller/project /Users/distiller/go/src/github.com/f00stx/gopsutil
       - run:
           command: |
             export PATH=$GOPATH/bin:$PATH
-            cd /Users/distiller/go/src/github.com/shirou/gopsutil && dep ensure
+            cd /Users/distiller/go/src/github.com/f00stx/gopsutil && dep ensure
       - run:
           command: |
-            cd /Users/distiller/go/src/github.com/shirou/gopsutil && go build -v
+            cd /Users/distiller/go/src/github.com/f00stx/gopsutil && go build -v
       - run:
           command: |
-            cd /Users/distiller/go/src/github.com/shirou/gopsutil && make macos_test
+            cd /Users/distiller/go/src/github.com/f00stx/gopsutil && make macos_test
 
 workflows:
   version: 2

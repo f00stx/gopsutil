@@ -3,7 +3,7 @@ package mem
 import (
 	"encoding/json"
 
-	"github.com/shirou/gopsutil/internal/common"
+	"github.com/f00stx/gopsutil/internal/common"
 )
 
 var invoke common.Invoker = common.Invoke{}
@@ -91,7 +91,7 @@ type SwapMemoryStat struct {
 
 	// Linux specific numbers
 	// https://www.kernel.org/doc/Documentation/cgroup-v2.txt
-	PgMajFault  uint64  `json:"pgmajfault"`
+	PgMajFault uint64 `json:"pgmajfault"`
 }
 
 func (m VirtualMemoryStat) String() string {

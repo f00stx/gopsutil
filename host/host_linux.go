@@ -15,7 +15,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/shirou/gopsutil/internal/common"
+	"github.com/f00stx/gopsutil/internal/common"
 	"golang.org/x/sys/unix"
 )
 
@@ -383,6 +383,39 @@ func SensorsTemperaturesWithContext(ctx context.Context) ([]TemperatureStat, err
 
 	if len(files) == 0 { // handle distributions without hwmon, like raspbian #391, parse legacy thermal_zone files
 		files, err = filepath.Glob(common.HostSys("/class/thermal/thermal_zone*/"))
+		if err != nil {
+			return temperatures, err
+		}
+		for _, file := range files {
+			// Get the name of the temperature you are reading
+			name, err := ioutil.ReadFile(filepath.Join(file, "type"))
+			if err != nil {
+				warns.Add(err)
+				continue
+			}
+			// Get the temperature reading
+			current, err := ioutil.ReadFile(filepath.Join(file, "temp"))
+			if err != nil {
+				warns.Add(err)
+				continue
+			}
+			temperature, err := strconv.ParseInt(strings.TrimSpace(string(current)), 10, 64)
+			if err != nil {
+				warns.Add(err)
+				continue
+			}
+
+			temperatures = append(temperatures, TemperatureStat{
+				SensorKey:   strings.TrimSpace(string(name)),
+				Temperature: float64(temperature) / 1000.0,
+			})
+		}
+		return temperatures, warns.Reference()
+	}
+
+	if len(files) == 0 {
+		// try virtual (A311D)
+		files, err = filepath.Glob(common.HostSys("/devices/virtual/thermal/thermal_zone*"))
 		if err != nil {
 			return temperatures, err
 		}
